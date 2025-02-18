@@ -48,5 +48,5 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
         stats_df["Data Type"] = numeric_data.dtypes.values
 
         column_order = ["Column", "Data Type"] + [col for col in stats_df.columns if col not in {"Column", "Data Type"}]
-        return stats_df[column_order].sort_values("column")
+        return stats_df[column_order].sort_values("Column")
 
