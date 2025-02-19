@@ -50,4 +50,13 @@ class Visualizer:
         sns.boxplot(x=data[column], ax=ax)
         ax.set_title(f"Box plot of {column}")
     
-    
+    def plot_ecdf(self, data: pd.DataFrame, column: str, ax: plt.axes) -> None:
+        """Plot an empirical cumulative distribution function.
+
+        Args:
+            data (pd.DataFrame): Input Pandas DataFrame.
+            column (str): Name of the column for ecdf plot.
+            ax (plt.axes): Graph's axis object
+        """
+        sns.ecdfplot(data=data, x=column, ax=ax)
+        ax.set_title(f"ECDF of {column}")
