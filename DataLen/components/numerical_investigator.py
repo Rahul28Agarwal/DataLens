@@ -1,4 +1,7 @@
 from __future__ import annotations
+from typing import Optional
+import matplotlib.pyplot as plt
+from IPython.display import display
 
 import pandas as pd
 from .abstract_data_investigator import AbstractDataInvestigator
@@ -48,5 +51,35 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
         stats_df["Data Type"] = numeric_data.dtypes.values
 
         column_order = ["Column", "Data Type"] + [col for col in stats_df.columns if col not in {"Column", "Data Type"}]
-        return stats_df[column_order].sort_values("column")
+        return stats_df[column_order].sort_values("Column")
+    
+    def univariate_analysis(
+        self,
+        column: str,
+        data: pd.DataFrame | None = None,
+        figsize: tuple[int, int] = (20,6),
+        bins: int | None = None,
+        show_plots: bool = True,
+    ) -> Optional[tuple[pd.DataFrame, plt.figure]] :
+        data = data or self.data.copy()
+        numeric_columns = data.select_dtypes(include="number").columns.tolist()
+
+        if column not in numeric_columns:
+            raise ValueError(f"Column {column} is not numerical or not present in the data.")
+        
+        stats = self.describe_columns(data[[column]])
+        display(stats)
+
+        fig, axs = plt.subplot(1, 3, figsize=figsize)
+        self.visualizer.plot_histogram(data, column, axs[0], bins)
+        self.visualizer.plot_box(data, column, axs[1])
+        self.visualizer.plot_box(data, column, axs[2])
+
+        plt.tight_layout()
+        if show_plots:
+            plt.show()
+            return None
+        return stats, fig
+        
+        
 
