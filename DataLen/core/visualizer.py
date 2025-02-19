@@ -14,7 +14,7 @@ class Visualizer:
             self,
             data: pd.DataFrame,
             column: str,
-            ax: plt.Axes, 
+            ax: plt.axes, 
             bins: int | None = None,
     ) -> None:
         """Plot a histogram with automatic bin calculation.
@@ -38,3 +38,16 @@ class Visualizer:
         ax.set_title(f"Histogram of {column}")
         ax.set_xlabel(column)
         ax.set_ylabel("Frequency")
+    
+    def plot_box(self, data: pd.DataFrame, column: str, ax: plt.axes) -> None:
+        """Plot a box plot.
+
+        Args:
+            data (pd.DataFrame): Input Pandas DataFrame.
+            column (str): Name of the column for box plot.
+            ax (plt.axes): Graph's axis object
+        """
+        sns.boxplot(x=data[column], ax=ax)
+        ax.set_title(f"Box plot of {column}")
+    
+    
