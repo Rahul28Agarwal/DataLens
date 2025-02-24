@@ -13,8 +13,8 @@ def sample_mixed_data():
 @pytest.fixture
 def non_categorical_dataframe() -> pd.DataFrame:
     return pd.DataFrame({
-        'B': ['column', 'data', None, 'test', 'categorical'],
-        'C': ['a', 'b', 'c', 'd', 'e']
+        'A': [1, 2, 3, None, 5],
+        'B': [0, 0, 0, 0, 0],
     })
 
 def test_descibe_columns_with_categorical_data(sample_mixed_data):
@@ -27,3 +27,9 @@ def test_descibe_columns_with_categorical_data(sample_mixed_data):
                         ]
     
     assert all(col in result.columns for col in expected_columns)
+
+def test_describe_columns_without_categorical_column(non_categorical_dataframe):
+    investigator = CategoricalDataInvestigator(non_categorical_dataframe)
+
+    with pytest.raises(ValueError, match="DataFrame has no categorical data."):
+        investigator.describe_columns()
