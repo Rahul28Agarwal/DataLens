@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from IPython.display import display
 
 import pandas as pd
+import numpy as np
 from .abstract_data_investigator import AbstractDataInvestigator
 from ..core.visualizer import Visualizer
 
@@ -67,3 +68,8 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
 
         column_order = ["column", "Data Type"] + [col for col in stats_df.columns if col not in {"Column", "Data Type"}]
         return stats_df[column_order].sort_values("Column")
+    
+    @staticmethod
+    def _calculate_entropy(series: pd.Series) -> float:
+        value_counts = series.value_counts(normalize=True)
+        return -np.sum(value_counts * np.log2(value_counts))
