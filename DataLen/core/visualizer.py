@@ -60,3 +60,22 @@ class Visualizer:
         """
         sns.ecdfplot(data=data, x=column, ax=ax)
         ax.set_title(f"ECDF of {column}")
+
+    def plot_bar(self, data: pd.DataFrame, x_column: str, y_column: str, ax: plt.axes) -> None:
+        """Plat a bar plot
+
+        Args:
+            data (pd.DataFrame): Input Pandas DataFrame.
+            x_column (str): Name of the x axis column for bar plot.
+            y_column (str): Name of the y axis column for bar plot.
+            ax (plt.axes): Graph's axis object
+        """
+        sns.barplot(x=x_column, y=y_column, data=data, ax=ax)
+        ax.set_title(f"Bar chart of {x_column} and {y_column}")
+        ax.set_xlabel(x_column)
+        ax.set_ylabel(y_column)
+        ax.tick_params(axis="x", rotation=45)
+
+    def plot_pie(self, data: pd.DataFrame, x_column: str, y_column: str, ax: plt.axes) -> None:
+        ax.pie(data[y_column], labels=data[x_column], autopct="%1.1f%%", startangle=90)
+        ax.set_title(f"Pie chart of {x_column}")
