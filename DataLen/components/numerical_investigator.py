@@ -8,10 +8,16 @@ from .abstract_data_investigator import AbstractDataInvestigator
 from ..core.visualizer import Visualizer
 
 class NumericalDataInvestigator(AbstractDataInvestigator):
-    """Perform analysis on numerical variables"""
+    """
+    Perform analysis on numerical variables in a DataFrame.
+
+    This class extends AbstractDataInvestigator to provide specialized
+    methods for investigating and visualizing numerical data. It offers
+    tools for descriptive statistics and univariate analysis.
+    """
 
     def __init__(self, data: pd.DataFrame) -> None:
-        """Initialize the NumercialDataInvestigator.
+        """Initialize the NumericalDataInvestigator.
 
         Args:
             data (pd.DataFrame): Pandas DataFrame.
@@ -20,6 +26,31 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
         self.visualizer = Visualizer()
 
     def describe_columns(self, data: pd.DataFrame | None = None) -> pd.DataFrame:
+        """Calculate descriptive statistics for numerical columns in the dataset.
+
+        This method analyzes the provided DataFrame (or the class's internal data if no DataFrame is provided)
+        and focuses on columns with numerical data types. It calculates various statistics for each
+        numerical column, including:
+
+        * Count: Total number of non-null values
+        * Missing: Number of missing values
+        * Zeros: Number of zeros
+        * Unique: Number of distinct values
+        * Min, Max: Minimum and Maximum values
+        * Quantiles: Percentiles (25th, 75th, 90th, 99th)
+        * Mean, Median: Central tendency measures
+        * StdDev: Standard deviation
+        * Skew: Measure of asymmetry in the distribution
+        * Kurtosis: Measure of peakedness in the distribution
+        * IQR: Interquartile Range (difference between 75th and 25th percentile)
+
+        Args:
+            data (pd.DataFrame, optional): The DataFrame to analyze. Defaults to None (uses self.data).
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the calculated descriptive statistics for each numerical column.
+
+        """
         data = data or self.data.copy()
         
         numeric_data = data.select_dtypes(include="number")
@@ -28,6 +59,7 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
             raise ValueError("DataFrame has no numerical data.")
 
         def calculate_stats(series: pd.Series):
+            # Calculate a comprehensive set of statistics for the given series
             return pd.Series({
                 "Count": series.count(),
                 "Missing": series.isna().sum(),
@@ -61,6 +93,30 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
         bins: int | None = None,
         show_plots: bool = True,
     ) -> Optional[tuple[pd.DataFrame, plt.figure]] :
+        """Perform univariate analysis on a numerical column in the dataset.
+
+        This method analyzes the provided column (or a specific column if specified) and creates visualizations
+        to explore its distribution. It calculates descriptive statistics and creates visualizations such as:
+
+        * Descriptive Statistics: Count, Mean, Standard Deviation, Minimum, Maximum, etc.
+            (calculated by num_column_describe)
+        * Histogram: Shows the frequency distribution of the values
+        * Box Plot: Displays the distribution with quartiles and potential outliers
+        * Density Plot: Represents the probability density of the values
+
+        Args:
+            column (str): The name of the numerical column to analyze.
+            data (pd.DataFrame, optional): The DataFrame containing the data. Defaults to None (uses self.data).
+            figsize (tuple[int, int], optional): The figure size for the plots. Defaults to (20, 6).
+            bins (int, optional): The number of bins for the histogram.  Defaults to None.
+            show_plots (bool, optional): If True, displays the plots immediately. If False, returns
+                the figure for further customization. Defaults to True.
+            
+        Returns:
+            Optional[tuple[pd.DataFrame, plt.Figure]]: If show_plots is False, returns a tuple containing
+            the descriptive statistics DataFrame and the matplotlib Figure object. If show_plots is True,
+            returns None after displaying the plots.
+        """
         data = data or self.data.copy()
         numeric_columns = data.select_dtypes(include="number").columns.tolist()
 
@@ -70,10 +126,10 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
         stats = self.describe_columns(data[[column]])
         display(stats)
 
-        fig, axs = plt.subplot(1, 3, figsize=figsize)
+        fig, axs = plt.subplots(1, 3, figsize=figsize)
         self.visualizer.plot_histogram(data, column, axs[0], bins)
         self.visualizer.plot_box(data, column, axs[1])
-        self.visualizer.plot_box(data, column, axs[2])
+        self.visualizer.plot_ecdf(data, column, axs[2])
 
         plt.tight_layout()
         if show_plots:
