@@ -20,7 +20,7 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
         super().__init__(data)
         self.visualizer = Visualizer()
 
-    def descibe_column(self, data: pd.DataFrame | None = None) -> pd.DataFrame:
+    def describe_columns(self, data: pd.DataFrame | None = None) -> pd.DataFrame:
         """Calculates descriptive statistics for categorical columns in the dataset.
 
         This method analyzes the provided DataFrame (or the class's internal data if no DataFrame is provided)
@@ -62,11 +62,11 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
                 "Mode Percentage": (series.value_counts(normalize=True).iloc[0] * 100) if not series.value_counts().empty else 0,  # noqa: E501
                 "Second Mode": series.mode().iloc[1] if len(series.mode()) > 1 else None,
                 "Entropy": self._calculate_entropy(series),
-            })
+            }, name=series.name)
         stats_df = categorical_data.apply(calculate_stats).T.reset_index().rename(columns={"index":"Column"})
         stats_df["Data Type"] = categorical_data.dtypes.values
 
-        column_order = ["column", "Data Type"] + [col for col in stats_df.columns if col not in {"Column", "Data Type"}]
+        column_order = ["Column", "Data Type"] + [col for col in stats_df.columns if col not in {"Column", "Data Type"}]
         return stats_df[column_order].sort_values("Column")
     
     @staticmethod
