@@ -126,6 +126,188 @@ class BivariateDataInvestigator(AbstractDataInvestigator):
         except Exception as e:
             raise e
         
+    def _analyze_categorical_relationship(
+        self,
+        data: pd.DataFrame,
+        first_column: str,
+        second_column: str
+    ) -> None:
+        """Analyze the relationship between two categorical variables.
+        
+        This method examies the association between two categorical columns by:
+        1. Creating contigency tables (raw counts and normalized)
+        2. Performing chi-Square test of independence
+        3. Visualizing the relationship with the stacked bar charts
+
+        Args:
+             data (pd.DataFrame): The dataset containing the columns to analyze
+            first_column (str): Name of the first categorical column
+            second_column (str): Name of the second categorical column
+        """
+        # Define constants
+        SIGNIFICANCE_THRESHOLD = 0.05
+        
+        # Create contingency table
+        contingency_table = pd.crosstab(data[first_column], data[second_column])
+        
+        
+        try:
+            # Calculate Chi-square test
+            chi2, p_value, dof, expected = chi2_contingency(contingency_table)
+            
+            # Check if test is reliable (expected frequencies should be >= 5)
+            has_small_expected = (expected < 5).any()
+            
+            # Create results DataFrame
+            chi_square_results = pd.DataFrame({
+                'Metric': ['Chi-square Statistic', 'p-value', 'Degrees of Freedom'],
+                'Value': [f"{chi2:.3f}", f"{p_value:.3f}", dof]
+            })
+            
+            # Display chi-square results and contingency table
+            display(pd.DataFrame([{'Association Analysis': f"{first_column} vs {second_column}"}]))
+            display(chi_square_results)
+            
+             # Display interpretation with warning if needed
+            if has_small_expected:
+                logging.warning("Some expected frequencies are < 5, chi-square may not be reliable")
+                print("⚠️ Warning: Some expected frequencies are < 5, chi-square may not be reliable")
+            
+            # Show association strength interpretation
+            significance = "significant" if p_value < SIGNIFICANCE_THRESHOLD else "not significant"
+            print(f"The association between {first_column} and {second_column} is statistically {significance} (p={p_value:.3f})")
+            
+            # Display the contingency tables
+            display(pd.DataFrame([{'Raw Counts': 'Contingency Table'}]))
+            display(contingency_table)
+            
+            # Create and display normalized contingency table
+            normalized_table = pd.crosstab(
+                data[first_column], 
+                data[second_column], 
+                normalize="index", 
+                margins=True
+            )
+            
+            display(pd.DataFrame([{'Normalized': 'Proportions by Row'}]))
+            display(normalized_table)
+            
+            # Create visualizations
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+            
+            # Use the visualizer method for the plots
+            self.visualizer.plot_stacked_bar(
+                contingency_table,
+                f"Distribution of {second_column} by {first_column}",
+                ax1
+            )
+            self.visualizer.plot_normalized_stacked_bar(
+                normalized_table,
+                f"Proportion of {second_column} by {first_column}",
+                ax2
+            )
+            
+            plt.suptitle(
+                f"Association Analysis: Chi-square={chi2:.2f}, p={p_value:.3f} ({significance})",
+                fontsize=14
+            )
+            
+            plt.tight_layout()
+            plt.show()
+        except Exception as e:
+            logging.error(f"Error in categorical analysis: {str(e)}")
+            raise ValueError(f"Unable to complete categorical analysis: {str(e)}")
+            
+    
+    def _analyze_numerical_categorical_relationship(
+        self,
+        data: pd.DataFrame,
+        numerical_column: str,
+        categorical_column: str
+    ) -> None:
+        """_summary_
+
+        Args:
+            data (pd.DataFrame): _description_
+            numerical_column (str): _description_
+            categorical_column (str): _description_
+        """
+        try:
+            # Calculate grouped statistic
+            grouped_stats = (
+                data
+                .groupby(categorical_column)
+                .agg(
+                    count=(numerical_column, "count"),
+                    missing=(numerical_column, lambda x: x.isna().sum()),
+                    zeros=(numerical_column, lambda x: (x == 0).sum()),
+                    min=(numerical_column, "min"),
+                    q25=(numerical_column, lambda x: x.quantile(0.25)),
+                    median=(numerical_column, "median"),
+                    mean=(numerical_column, "mean"),
+                    q75=(numerical_column, lambda x: x.quantile(0.75)),
+                    max=(numerical_column, "max"),
+                    std=(numerical_column, "std"),
+                    iqr=(numerical_column, lambda x: x.quantile(0.75) - x.quantile(0.25)),
+                )
+            )
+            
+            # Add percentage of total for each category
+            category_counts  = data[categorical_column].value_counts()
+            category_percentages = category_counts /category_counts.sum() * 100
+            
+            # Create a DataFrame for displaying category distribution
+            category_distribution = pd.DataFrame({
+                "Count": category_counts,
+                "Percentage": category_percentages.round(2)
+            })
+            
+            # Display results in a structured manner
+            display(pd.DataFrame([{'Analysis': f"Distribution of {numerical_column} by {categorical_column}"}]))
+            display(grouped_stats)
+            
+            display(pd.DataFrame([{'Category Distribution': f"Frequency of values in {categorical_column}"}]))
+            display(category_distribution)
+            
+            # Check if there are too many categories
+            if data[categorical_column].nunique() > 10:
+                logging.warning(f"Large number of categories may make visualization cluttered")
+                print("⚠️ Note: Only showing top 10 categories by frequency for visualization clarity.")
+                top_categories = category_counts.nlargest(10).index.tolist()
+                plot_data = data[data[categorical_column].isin(top_categories)].copy()
+            else:
+                plot_data = data.copy()
+            
+            # Create visualizations
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+            
+            # Use the Visualizer class for plotting
+            self.visualizer.plot_violin_distribution(
+                plot_data, 
+                categorical_column, 
+                numerical_column, 
+                ax1
+            )
+            
+            self.visualizer.plot_box_distribution(
+                plot_data,
+                categorical_column,
+                numerical_column,
+                ax2
+            )
+            
+            plt.suptitle(
+                f"Distribution of {numerical_column} across {categorical_column} categories",
+                fontsize=14
+            )
+            
+            plt.tight_layout()
+            plt.show()
+            
+        except Exception as e:
+            logging.error(f"Error in numerical-categorical analysis: {str(e)}")
+            raise ValueError(f"Unable to complete analysis: {str(e)}")
+    
     def analyze_bivariate_relationship(
         self,
         first_column: str,

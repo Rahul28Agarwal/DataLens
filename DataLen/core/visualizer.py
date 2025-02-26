@@ -157,3 +157,127 @@ class Visualizer:
         if show_colorbar:
             plt.colorbar(hb, ax=ax, label="Count")
         
+    def plot_stacked_bar(
+        self, 
+        data: pd.DataFrame,
+        x_column: str,
+        y_column: str,
+        title: str,
+        ax: plt.Axes,
+        colormap: str = "Accent"
+    ) -> None:
+        """Plot a stacked bar chart for categorical data comparison.
+    
+        Args:
+            data (pd.DataFrame): Input contingency table
+            x_column (str): Name of column for x-axis
+            y_column (str): Name of column for y-axis
+            title (str): Title for the plot
+            ax (plt.Axes): Graph's axis object
+            colormap (str, optional): Colormap for the bars. Defaults to "Accent".
+        """
+        data.plot(
+            kind="bar",
+            stacked=True,
+            ax=ax,
+            colormap=colormap
+        )
+        
+        ax.set_title(f"Stacked Bar plot for {x_column} by {y_column}")
+        ax.set_ylabel("Count")
+        ax.set_xlabel(x_column)
+        ax.tick_params(axis='x', rotation=45)
+    
+    def plot_violin_distribution(
+        self,
+        data: pd.DataFrame,
+        category_column: str,
+        value_column: str,
+        ax: plt.Axes,
+        palette: str = "muted"
+    ) -> None:
+        """Plot a violin plot showing distribution of numerical values across categories.
+        
+        Args:
+            data (pd.DataFrame): Input pandas DataFrame
+            category_column (str): Name of categorical column for x-axis
+            value_column (str): Name of numerical column for y-axis
+            ax (plt.Axes): Graph's axis object
+            palette (str, optional): Color palette for the plot. Defaults to "muted".
+        """
+        # Create violin plot with interior points
+        sns.violinplot(
+            x=category_column,
+            y=value_column,
+            data=data,
+            ax=ax,
+            palette=palette,
+            inner="point"  # Show individual data points
+        )
+        
+        # Add mean markers
+        means = data.groupby(category_column)[value_column].mean()
+        for i, mean_val in enumerate(means):
+            ax.plot(i, mean_val, 'o', color='red', markersize=8)
+        
+        ax.set_title(f"Distribution of {value_column} by {category_column}")
+        ax.set_xlabel(category_column)
+        ax.set_ylabel(value_column)
+        ax.tick_params(axis='x', rotation=45)
+
+    def plot_box_distribution(
+        self,
+        data: pd.DataFrame,
+        category_column: str,
+        value_column: str,
+        ax: plt.Axes,
+        palette: str = "muted"
+    ) -> None:
+        """Plot a box plot showing distribution of numerical values across categories.
+        
+        Args:
+            data (pd.DataFrame): Input pandas DataFrame
+            category_column (str): Name of categorical column for x-axis
+            value_column (str): Name of numerical column for y-axis
+            ax (plt.Axes): Graph's axis object
+            palette (str, optional): Color palette for the plot. Defaults to "muted".
+        """
+        # Create box plot with stripped points
+        sns.boxplot(
+            x=category_column,
+            y=value_column,
+            data=data, 
+            ax=ax,
+            palette=palette,
+            showfliers=False  # Hide outliers as they'll be shown in strip plot
+        )
+        
+        # Add strip plot for individual points
+        sns.stripplot(
+            x=category_column,
+            y=value_column,
+            data=data,
+            ax=ax,
+            color="black",
+            alpha=0.3,
+            size=3,
+            jitter=True
+        )
+        
+        # Add category size annotations
+        sizes = data[category_column].value_counts()
+        for i, (cat, size) in enumerate(sizes.items()):
+            ax.annotate(
+                f"n={size}", 
+                xy=(i, data[value_column].min()), 
+                xytext=(0, -20),
+                textcoords="offset points",
+                ha='center', 
+                va='top',
+                fontsize=8
+            )
+        
+        ax.set_title(f"Box Plot of {value_column} by {category_column}")
+        ax.set_xlabel(category_column)
+        ax.set_ylabel(value_column)
+        ax.tick_params(axis='x', rotation=45)
