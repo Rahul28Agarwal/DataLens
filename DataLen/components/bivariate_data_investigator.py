@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 from IPython.display import display
+import matplotlib.pyplot as plt
 import logging
 from scipy.stats import chi2_contingency, pearsonr, spearmanr
 from .abstract_data_investigator import AbstractDataInvestigator
@@ -105,6 +106,23 @@ class BivariateDataInvestigator(AbstractDataInvestigator):
             # Display correlation results
             display(correlation_results)
             
+            # Create visualizations
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+
+            # Use the Visualizer methods
+            self.visualizer.plot_regression(data, first_column, second_column, ax1)
+            self.visualizer.plot_hexbin(data, first_column, second_column, ax2)
+
+            plt.suptitle(
+                f"Correlation Analysis\n"
+                f"Pearson: r={pearson_stat:.3f} (p={pearson_p_value:.3f})\n"
+                f"Spearman: r={spearman_stat:.3f} (p={spearman_p_value:.3f})",
+                fontsize=14
+            )
+
+            plt.tight_layout()
+            plt.show()
+                        
         except Exception as e:
             raise e
         
