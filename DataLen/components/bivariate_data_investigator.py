@@ -340,9 +340,10 @@ class BivariateDataInvestigator(AbstractDataInvestigator):
         is_second_numeric = pd.api.types.is_numeric_dtype(data[second_column])
         
         if is_first_numeric and is_second_numeric:
-            pass
+            self._anlyze_numerical_relationship(data, first_column, second_column)
         elif not is_first_numeric and not is_second_numeric:
-            pass
+            self._analyze_categorical_relationship(data, first_column, second_column)
         else:
             numeric_column = first_column if is_first_numeric else second_column
             categorical_column = second_column if is_first_numeric else first_column
+            self._analyze_numerical_categorical_relationship(data, numeric_column, categorical_column)
