@@ -211,6 +211,7 @@ class Visualizer:
             y=value_column,
             data=data,
             ax=ax,
+            hue=value_column,
             palette=palette,
             inner="point"  # Show individual data points
         )
@@ -248,6 +249,7 @@ class Visualizer:
             y=value_column,
             data=data, 
             ax=ax,
+            hue=value_column,
             palette=palette,
             showfliers=False  # Hide outliers as they'll be shown in strip plot
         )

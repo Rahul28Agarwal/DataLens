@@ -198,11 +198,15 @@ class BivariateDataInvestigator(AbstractDataInvestigator):
             # Use the visualizer method for the plots
             self.visualizer.plot_stacked_bar(
                 contingency_table,
+                first_column,
+                second_column,
                 f"Distribution of {second_column} by {first_column}",
                 ax1
             )
-            self.visualizer.plot_normalized_stacked_bar(
+            self.visualizer.plot_stacked_bar(
                 normalized_table,
+                first_column,
+                second_column,
                 f"Proportion of {second_column} by {first_column}",
                 ax2
             )
