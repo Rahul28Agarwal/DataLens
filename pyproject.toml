@@ -1,6 +1,14 @@
 [tool.ruff]
 
+# Set the maximum line length to 79
 line-length = 120
+ignore=["PLR0915", "PD011", "RET504", "T201", "N806", "TID252"]
+
+
+[tool.ruff.lint]
+# Add the `line-too-long` rule to the enforced rule set.
+extend-select = ["E501"]
+select = ["ALL"]
 
 [project]
 name = "datalens"
