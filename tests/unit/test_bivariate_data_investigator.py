@@ -5,7 +5,7 @@ from ...DataLen.components.bivariate_data_investigator import BivariateDataInves
 def test_empty_dataframe():
     df = pd.DataFrame()
     with pytest.raises(ValueError, match="The provided DataFrame is empty"):
-        bivariate_investigator = BivariateDataInvestigator(df)
+        BivariateDataInvestigator(df)
     
 @pytest.fixture
 def sample_data():
