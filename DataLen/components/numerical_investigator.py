@@ -1,15 +1,15 @@
 from __future__ import annotations
-from typing import Optional
+
 import matplotlib.pyplot as plt
+import pandas as pd
 from IPython.display import display
 
-import pandas as pd
-from .abstract_data_investigator import AbstractDataInvestigator
 from ..core.visualizer import Visualizer
+from .abstract_data_investigator import AbstractDataInvestigator
+
 
 class NumericalDataInvestigator(AbstractDataInvestigator):
-    """
-    Perform analysis on numerical variables in a DataFrame.
+    """Perform analysis on numerical variables in a DataFrame.
 
     This class extends AbstractDataInvestigator to provide specialized
     methods for investigating and visualizing numerical data. It offers
@@ -21,6 +21,7 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
 
         Args:
             data (pd.DataFrame): Pandas DataFrame.
+
         """
         super().__init__(data)
         self.visualizer = Visualizer()
@@ -52,13 +53,14 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
 
         """
         data = data or self.data.copy()
-        
-        numeric_data = data.select_dtypes(include="number")
-        
-        if numeric_data.empty:
-            raise ValueError("DataFrame has no numerical data.")
 
-        def calculate_stats(series: pd.Series):
+        numeric_data = data.select_dtypes(include="number")
+
+        if numeric_data.empty:
+            msg = "DataFrame has no numerical data."
+            raise ValueError(msg)
+
+        def calculate_stats(series: pd.Series) -> pd.Series:
             # Calculate a comprehensive set of statistics for the given series
             return pd.Series({
                 "Count": series.count(),
@@ -78,21 +80,21 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
                 "Kurtosis": series.kurtosis(),
                 "IQR": series.quantile(0.75) - series.quantile(0.25),
             }, name=series.name)
-        
+
         stats_df = numeric_data.apply(calculate_stats).T.reset_index().rename(columns={"index": "Column"})
         stats_df["Data Type"] = numeric_data.dtypes.values
 
         column_order = ["Column", "Data Type"] + [col for col in stats_df.columns if col not in {"Column", "Data Type"}]
         return stats_df[column_order].sort_values("Column")
-    
+
     def univariate_analysis(
         self,
         column: str,
         data: pd.DataFrame | None = None,
         figsize: tuple[int, int] = (20,6),
         bins: int | None = None,
-        show_plots: bool = True,
-    ) -> Optional[tuple[pd.DataFrame, plt.figure]] :
+        show_plots: bool = True,  # noqa: FBT001, FBT002
+    ) -> tuple[pd.DataFrame, plt.figure] | None :
         """Perform univariate analysis on a numerical column in the dataset.
 
         This method analyzes the provided column (or a specific column if specified) and creates visualizations
@@ -111,18 +113,20 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
             bins (int, optional): The number of bins for the histogram.  Defaults to None.
             show_plots (bool, optional): If True, displays the plots immediately. If False, returns
                 the figure for further customization. Defaults to True.
-            
+
         Returns:
             Optional[tuple[pd.DataFrame, plt.Figure]]: If show_plots is False, returns a tuple containing
             the descriptive statistics DataFrame and the matplotlib Figure object. If show_plots is True,
             returns None after displaying the plots.
+
         """
         data = data or self.data.copy()
         numeric_columns = data.select_dtypes(include="number").columns.tolist()
 
         if column not in numeric_columns:
-            raise ValueError(f"Column {column} is not numerical or not present in the data.")
-        
+            msg = f"Column {column} is not numerical or not present in the data."
+            raise ValueError(msg)
+
         stats = self.describe_columns(data[[column]])
         display(stats)
 
@@ -136,6 +140,6 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
             plt.show()
             return None
         return stats, fig
-        
-        
+
+
 
