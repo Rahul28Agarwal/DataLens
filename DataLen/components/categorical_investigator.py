@@ -1,21 +1,23 @@
 from __future__ import annotations
-from typing import Optional
+
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 from IPython.display import display
 
-import pandas as pd
-import numpy as np
-from .abstract_data_investigator import AbstractDataInvestigator
 from ..core.visualizer import Visualizer
+from .abstract_data_investigator import AbstractDataInvestigator
+
 
 class CategoricalDataInvestigator(AbstractDataInvestigator):
-    """Perform analysis on categorical variables"""
+    """Perform analysis on categorical variables."""
 
     def __init__(self, data: pd.DataFrame) -> None:
-        """Initialize the CategoricalDataInvestigator
+        """Initialize the CategoricalDataInvestigator.
 
         Args:
             data (pd.DataFrame): Pandas DataFrame.
+
         """
         super().__init__(data)
         self.visualizer = Visualizer()
@@ -43,15 +45,16 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
         Returns:
             pd.DataFrame: A DataFrame containing the calculated descriptive statistics for each categorical column.
 
-        """ 
+        """  # noqa: D401
         data = data or self.data.copy()
-        
+
         # Get dataframe with only categorical columns
         categorical_data = data.select_dtypes(exclude="number")
 
         if categorical_data.empty:
-            raise ValueError("DataFrame has no categorical data.")
-        
+            msg = "DataFrame has no categorical data."
+            raise ValueError(msg)
+
         def calculate_stats(series: pd.Series) -> pd.Series:
             return pd.Series({
                 "Count": series.count(),
@@ -68,19 +71,19 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
 
         column_order = ["Column", "Data Type"] + [col for col in stats_df.columns if col not in {"Column", "Data Type"}]
         return stats_df[column_order].sort_values("Column")
-    
+
     @staticmethod
     def _calculate_entropy(series: pd.Series) -> float:
         value_counts = series.value_counts(normalize=True)
         return -np.sum(value_counts * np.log2(value_counts))
-    
+
     def univariate_analysis(
             self,
             column: str,
             data: pd.DataFrame | None = None,
             figsize: tuple[int, int] = (20,6),
-            show_plots: bool = True,
-    ) -> Optional[tuple[pd.DataFrame, plt.figure]]:
+            show_plots: bool = True,  # noqa: FBT001, FBT002
+    ) -> tuple[pd.DataFrame, plt.figure] | None:
         """Perform univariate analysis on a categorical column in the dataset.
 
         Args:
@@ -94,13 +97,15 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
             Optional[tuple[pd.DataFrame, plt.figure]]: If show_plots is False, returns a tuple containing
             the descriptive statistics DataFrame and the matplotlib Figure object. If show_plots is True,
             returns None after displaying the plots.
+
         """
         data = data or self.data.copy()
         categorical_columns = data.select_dtypes(exclude="number").columns.tolist()
 
         if column not in categorical_columns:
-            raise ValueError(f"Column {column} is not numerical or not present in the data.")
-        
+            msg = f"Column {column} is not numerical or not present in the data."
+            raise ValueError(msg)
+
         stats = self.describe_columns(data[[column]])
         print(f"Descriptive statistics for {column}")
         display(stats)
@@ -112,7 +117,7 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
         frequency.columns = [column, "Count"]
         frequency["Percentage"] = (frequency["Count"] / frequency["Count"].sum()) * 100
 
-        print(f"\nTop {top_n} frequency counts for {column}")  # noqa: T201
+        print(f"\nTop {top_n} frequency counts for {column}")
         display(frequency)
 
         fig, axs = plt.subplots(1, 2, figsize=figsize)
