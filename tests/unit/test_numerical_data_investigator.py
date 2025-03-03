@@ -2,8 +2,7 @@
 import pandas as pd
 import pytest
 
-from ...DataLen.components.numerical_investigator import NumericalDataInvestigator  # noqa: TID252
-
+from ...DataLen.investigator.numerical_investigator import NumericalDataInvestigator
 
 @pytest.fixture
 def sample_mixed_data():

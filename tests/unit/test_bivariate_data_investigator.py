@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from ...DataLen.components.bivariate_data_investigator import BivariateDataInvestigator
+from ...DataLen.investigator.bivariate_data_investigator import BivariateDataInvestigator
 
 def test_empty_dataframe():
     df = pd.DataFrame()
