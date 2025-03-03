@@ -2,7 +2,7 @@
 
 # Set the maximum line length to 79
 line-length = 120
-ignore=["PLR0915", "PD011", "RET504", "T201", "N806", "TID252"]
+ignore=["PLR0915", "PD011", "RET504", "T201", "N806", "TID252", "FBT002"]
 
 
 [tool.ruff.lint]

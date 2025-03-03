@@ -7,7 +7,7 @@ import pandas as pd
 from IPython.display import display
 from scipy.stats import chi2_contingency, pearsonr, spearmanr
 
-from ..core.visualizer import Visualizer
+from ..visualization.visualizer import Visualizer
 from .abstract_data_investigator import AbstractDataInvestigator
 
 
