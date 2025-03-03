@@ -84,10 +84,18 @@ class Visualizer:
         ax.tick_params(axis="x", rotation=45)
 
     def plot_pie(self, data: pd.DataFrame, x_column: str, y_column: str, ax: plt.axes) -> None:
+        """Plot a pie chart.
+
+        Args:
+            data (pd.DataFrame): Input pandas DataFrame
+            x_column (str): Name of column for x-axis
+            y_column (str): Name of column for y-axis
+            ax (plt.axes): Graph's axis object
+        """  # noqa: D413
         ax.pie(data[y_column], labels=data[x_column], autopct="%1.1f%%", startangle=90)
         ax.set_title(f"Pie chart of {x_column}")
 
-    def plot_regression(
+    def plot_regression(  # noqa: PLR0913
             self,
             data: pd.DataFrame,
             x_column: str,
@@ -125,7 +133,7 @@ class Visualizer:
         ax.set_xlabel(x_column)
         ax.set_ylabel(y_column)
 
-    def plot_hexbin(
+    def plot_hexbin(  # noqa: PLR0913
         self,
         data: pd.DataFrame,
         x_column: str,
@@ -165,7 +173,7 @@ class Visualizer:
         if show_colorbar:
             plt.colorbar(hb, ax=ax, label="Count")
 
-    def plot_stacked_bar(
+    def plot_stacked_bar(  # noqa: PLR0913
         self,
         data: pd.DataFrame,
         x_column: str,
