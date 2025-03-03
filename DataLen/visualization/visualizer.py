@@ -13,6 +13,25 @@ if TYPE_CHECKING:
 class Visualizer:
     """A class for generating visualization for data analysis."""
 
+    def set_theme(
+        self,
+        style:str|None = "whitegrid",
+        context: str|None ="notebook",
+        palette: str|None ="deep",
+        ) -> None:
+        """Set the visual theme for all plots.
+
+        Args:
+            style (str): The seaborn style name. Options include "whitegrid",
+                "darkgrid", "white", "dark", and "ticks".
+            context (str): The plotting context controlling element size. Options
+                include "paper", "notebook", "talk", and "poster".
+            palette (str): Color palette name for categorical variables.
+            font_scale (float): Scaling factor for font sizes.
+
+        """
+        sns.set_theme(style=style, context=context, palette=palette)
+
     def plot_histogram(
             self,
             data: pd.DataFrame,

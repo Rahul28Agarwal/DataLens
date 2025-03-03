@@ -1,7 +1,7 @@
-from .abstract_data_investigator import AbstractDataInvestigator
-from .bivariate_data_investigator import BivariateDataInvestigator
-from .categorical_investigator import CategoricalDataInvestigator
-from .numerical_investigator import NumericalDataInvestigator
+from ..investigator.abstract_data_investigator import AbstractDataInvestigator
+from ..investigator.bivariate_data_investigator import BivariateDataInvestigator
+from ..investigator.categorical_investigator import CategoricalDataInvestigator
+from ..investigator.numerical_investigator import NumericalDataInvestigator
 
 __all__ = [
     "AbstractDataInvestigator",
