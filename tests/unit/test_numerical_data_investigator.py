@@ -2,7 +2,7 @@
 import pandas as pd
 import pytest
 
-from ...DataLen.investigator.numerical_investigator import NumericalDataInvestigator
+from ...datalens.investigator.numerical_investigator import NumericalDataInvestigator
 
 @pytest.fixture
 def sample_mixed_data():

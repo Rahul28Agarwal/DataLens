@@ -2,7 +2,7 @@
 import pandas as pd
 import pytest
 
-from ...DataLen.investigator.bivariate_data_investigator import BivariateDataInvestigator
+from ...datalens.investigator.bivariate_data_investigator import BivariateDataInvestigator
 
 
 def test_empty_dataframe():

@@ -52,7 +52,7 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
             pd.DataFrame: A DataFrame containing the calculated descriptive statistics for each numerical column.
 
         """
-        data = data or self.data.copy()
+        data = self.data.copy() if data is None else data
 
         numeric_data = data.select_dtypes(include="number")
 
@@ -93,7 +93,7 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
         data: pd.DataFrame | None = None,
         figsize: tuple[int, int] = (20,6),
         bins: int | None = None,
-        show_plots: bool = True,  # noqa: FBT001, FBT002
+        show_plots: bool = True,  # noqa: FBT001
     ) -> tuple[pd.DataFrame, plt.figure] | None :
         """Perform univariate analysis on a numerical column in the dataset.
 
@@ -120,7 +120,7 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
             returns None after displaying the plots.
 
         """
-        data = data or self.data.copy()
+        data = self.data.copy() if data is None else data
         numeric_columns = data.select_dtypes(include="number").columns.tolist()
 
         if column not in numeric_columns:
@@ -128,7 +128,7 @@ class NumericalDataInvestigator(AbstractDataInvestigator):
             raise ValueError(msg)
 
         stats = self.describe_columns(data[[column]])
-        display(stats)
+        display(stats.T)
 
         fig, axs = plt.subplots(1, 3, figsize=figsize)
         self.visualizer.plot_histogram(data, column, axs[0], bins)

@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from ...DataLen.investigator.categorical_investigator import CategoricalDataInvestigator
+from ...datalens.investigator.categorical_investigator import CategoricalDataInvestigator
 
 @pytest.fixture
 def sample_mixed_data():

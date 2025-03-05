@@ -176,7 +176,7 @@ class BivariateDataInvestigator(AbstractDataInvestigator):
             })
 
             # Display chi-square results and contingency table
-            display(pd.DataFrame([{"Association Analysis": f"{first_column} vs {second_column}"}]))
+            print(f"Association Analysis: {first_column} vs {second_column}")
             display(chi_square_results)
 
              # Display interpretation with warning if needed
@@ -189,7 +189,7 @@ class BivariateDataInvestigator(AbstractDataInvestigator):
             print(f"The association between {first_column} and {second_column} is statistically {significance} (p={p_value:.3f})")  # noqa: E501
 
             # Display the contingency tables
-            display(pd.DataFrame([{"Raw Counts": "Contingency Table"}]))
+            print("Raw Counts: Contingency Table")
             display(contingency_table)
 
             # Create and display normalized contingency table
@@ -200,7 +200,7 @@ class BivariateDataInvestigator(AbstractDataInvestigator):
                 margins=True,
             )
 
-            display(pd.DataFrame([{"Normalized": "Proportions by Row"}]))
+            print("Normalized Proportions by Row")
             display(normalized_table)
 
             # Create visualizations
@@ -281,10 +281,10 @@ class BivariateDataInvestigator(AbstractDataInvestigator):
             })
 
             # Display results in a structured manner
-            display(pd.DataFrame([{"Analysis": f"Distribution of {numerical_column} by {categorical_column}"}]))
+            print(f"Distribution of {numerical_column} by {categorical_column}")
             display(grouped_stats)
 
-            display(pd.DataFrame([{"Category Distribution": f"Frequency of values in {categorical_column}"}]))
+            print(f"Frequency of values in {categorical_column}")
             display(category_distribution)
 
             # Check if there are too many categories
@@ -350,7 +350,7 @@ class BivariateDataInvestigator(AbstractDataInvestigator):
 
         """
         # Use instance data if none provided
-        data = data or self.data.copy()
+        data = self.data.copy() if data is None else data
 
         # Validate columns exist using DataValidator
         self.validator.validate_column(first_column)

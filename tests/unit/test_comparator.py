@@ -2,7 +2,7 @@
 import pandas as pd
 import pytest
 
-from ...DataLen.comparators.data_comparator import DataComparator
+from ...datalens.comparators.data_comparator import DataComparator
 
 @pytest.fixture
 def first_data():

@@ -1,0 +1,10 @@
+Metadata-Version: 2.2
+Name: datalens
+Version: 0.1.0
+Summary: Advanced Exploratory Data Analysis Toolkit
+Author: Rahul Agarwal
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+
+# DataLens
+A comprehensive Python-based Exploratory Data Analysis toolkit

@@ -46,7 +46,7 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
             pd.DataFrame: A DataFrame containing the calculated descriptive statistics for each categorical column.
 
         """  # noqa: D401
-        data = data or self.data.copy()
+        data = self.data.copy() if data is None else data
 
         # Get dataframe with only categorical columns
         categorical_data = data.select_dtypes(exclude="number")
@@ -82,7 +82,7 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
             column: str,
             data: pd.DataFrame | None = None,
             figsize: tuple[int, int] = (20,6),
-            show_plots: bool = True,  # noqa: FBT001, FBT002
+            show_plots: bool = True,  # noqa: FBT001
     ) -> tuple[pd.DataFrame, plt.figure] | None:
         """Perform univariate analysis on a categorical column in the dataset.
 
@@ -99,7 +99,7 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
             returns None after displaying the plots.
 
         """
-        data = data or self.data.copy()
+        data = self.data.copy() if data is None else data
         categorical_columns = data.select_dtypes(exclude="number").columns.tolist()
 
         if column not in categorical_columns:
@@ -108,7 +108,7 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
 
         stats = self.describe_columns(data[[column]])
         print(f"Descriptive statistics for {column}")
-        display(stats)
+        display(stats.T)
 
         unique_values = data[column].nunique()
         top_n = min(unique_values, 10)
@@ -121,8 +121,8 @@ class CategoricalDataInvestigator(AbstractDataInvestigator):
         display(frequency)
 
         fig, axs = plt.subplots(1, 2, figsize=figsize)
-        self.visualizer.plot_bar(data, x_column=column, y_column="Count", ax=axs[0])
-        self.visualizer.plot_pie(data, x_column=column, y_column="Count", ax=axs[1])
+        self.visualizer.plot_bar(frequency, x_column=column, y_column="Count", ax=axs[0])
+        self.visualizer.plot_pie(frequency, x_column=column, y_column="Count", ax=axs[1])
 
         plt.tight_layout()
         if show_plots:
