@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import pandas as pd
 
+from ..comparators.data_comparator import DataComparator
 from ..investigator.abstract_data_investigator import AbstractDataInvestigator
 from ..investigator.bivariate_data_investigator import BivariateDataInvestigator
 from ..investigator.categorical_investigator import CategoricalDataInvestigator
@@ -118,4 +119,46 @@ class DataInvestigator(AbstractDataInvestigator):
 
         """
         return self.bivariate_investigator.analyze_bivariate_relationship(first_column, second_column, data)
+
+    def compare_with(
+        self,
+        second_data: pd.DataFrame,
+        compare_cols: list[str] | None = None,
+        feature_mapping: dict[str, str] | None = None,
+        is_group_mismatch: bool = False,  # noqa: FBT001
+    ) -> pd.DataFrame:
+        """Compare the investigator's data with another DataFrame.\
+
+        This method uses the DataComparator to perform a comprehensive comparison
+        between the investigator's data and another DataFrame. The comparison includes:
+        - Number of rows comparison
+        - Unique value comparison for specified columns
+        - Group-based comparisons if requested
+
+        Args:
+            second_data (pd.DataFrame): The second DataFrame to compare with the investigator's data.
+            compare_cols (list[str] | None, optional): A list of column names to compare between the DataFrames.
+                If None, uses all columns from the investigator's data. Defaults to None.
+            feature_mapping (dict[str, str] | None, optional): A dictionary mapping column names in the first
+                DataFrame to their corresponding names in the second DataFrame.
+                If None, assumes columns have the same name in both DataFrames. Defaults to None.
+            is_group_mismatch (bool, optional): Whether to include group-based comparisons. Defaults to False.
+                Group-based comparisons analyze relationships between pairs of columns.
+
+        Returns:
+            pd.DataFrame: A DataFrame containing the comparison results.
+
+        """
+        # Create a DataComparator instance
+        comparator = DataComparator(
+            first_data=self.data,
+            second_data=second_data,
+            compare_cols=compare_cols,
+            feature_mapping=feature_mapping,
+        )
+
+        # Perform the comparison
+        results = comparator.compare(is_group_mismatch=is_group_mismatch)
+
+        return results
 
