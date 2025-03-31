@@ -29,6 +29,7 @@ class DataInvestigator(AbstractDataInvestigator):
 
         Args:
             data (pd.DataFrame): DataFrame to be analyzed.
+
         """
         super().__init__(data)
         self.numerical_investigator = NumericalDataInvestigator(data)
