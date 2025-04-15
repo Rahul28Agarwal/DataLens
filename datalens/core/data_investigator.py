@@ -92,11 +92,9 @@ class DataInvestigator(AbstractDataInvestigator):
         """
         data = data or self.data.copy()
         if pd.api.types.is_numeric_dtype(data[column]):
-            stats, fig = self.numerical_investigator.univariate_analysis(column, data, figsize, bins, show_plots)
-        else:
-            stats, fig = self.categorical_investigator.univariate_analysis(column, data, figsize, show_plots)
+            return self.numerical_investigator.univariate_analysis(column, data, figsize, bins, show_plots)
 
-        return stats, fig
+        return self.categorical_investigator.univariate_analysis(column, data, figsize, show_plots)
 
     def bivariate_analysis(
         self,
